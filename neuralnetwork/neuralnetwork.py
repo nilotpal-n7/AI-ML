@@ -15,7 +15,7 @@ print(circles.head(10))
 print(circles.label.value_counts())
 plt.scatter(x=x[:,0], y=x[:,1], c=y, cmap=plt.cm.RdYlBu)
 plt.legend()
-#plt.show()
+plt.show()
 
 print(x.shape, y.shape)
 x_sample = x[0]
