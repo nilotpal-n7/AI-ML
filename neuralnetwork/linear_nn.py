@@ -36,7 +36,7 @@ print(device)
 x_train, y_train = x_train.to(device), y_train.to(device)
 x_test, y_test = x_test.to(device), y_test.to(device)
 
-def accuraccy_fn(y_true, y_pred):
+def accuracy_fn(y_true, y_pred):
     correct = torch.eq(y_true, y_pred).sum().item()
     acc = (correct / len(y_pred))
     return acc
@@ -49,20 +49,6 @@ def downloader(file_name):
         request = requests.get("https://raw.githubusercontent.com/mrdbourke/pytorch-deep-learning/main/helper_functions.py")
         with open(f"{file_name}", "wb") as f:
             f.write(request.content)
-
-def plotter(model):
-    downloader("helper_functions.py")
-    from helper_functions import plot_predictions, plot_decision_boundary
-
-    plt.figure(figsize=(12, 6))
-    plt.subplot(1, 2, 1)
-    plt.title("Train")
-    plot_decision_boundary(model_0, x_train, y_train)
-    plt.subplot(1, 2, 2)
-    plt.title("Test")
-    plot_decision_boundary(model, x_test, y_test)
-    plt.legend()
-    plt.show()
 
 class CircleModel_v0(nn.Module):
     def __init__(self):
@@ -106,7 +92,7 @@ for epoch in range(epoches):
     y_logits = model_0(x_train).squeeze()
     y_pred = torch.round(torch.sigmoid(y_logits))
     train_loss = loss_fn(y_logits, y_train)
-    train_acc = accuraccy_fn(y_true=y_train, y_pred=y_pred)
+    train_acc = accuracy_fn(y_true=y_train, y_pred=y_pred)
     optimizer.zero_grad()
     train_loss.backward()
     optimizer.step()
@@ -116,10 +102,24 @@ for epoch in range(epoches):
         test_logits = model_0(x_test).squeeze()
         test_pred = torch.round(torch.sigmoid(test_logits))
         test_loss = loss_fn(test_logits, y_test)
-        test_acc = accuraccy_fn(y_true=y_test, y_pred=test_pred)
+        test_acc = accuracy_fn(y_true=y_test, y_pred=test_pred)
 
     if epoch % 10 == 0:
         print(f"Epoch: {epoch} | Train Loss: {train_loss:.5f}, Train Acc.: {test_acc*100:.2f}% | Test Loss: {test_loss:.5f}, Test Acc.: {test_acc*100:.2f}%")
+
+def plotter(train_model=model_0, test_model=model_0, x_train=x_train, y_train=y_train, x_test=x_test, y_test=y_test):
+    downloader("helper_functions.py")
+    from helper_functions import plot_predictions, plot_decision_boundary
+
+    plt.figure(figsize=(12, 6))
+    plt.subplot(1, 2, 1)
+    plt.title("Train")
+    plot_decision_boundary(train_model, x_train, y_train)
+    plt.subplot(1, 2, 2)
+    plt.title("Test")
+    plot_decision_boundary(test_model, x_test, y_test)
+    plt.legend()
+    plt.show()
 
 '''model_0.eval()
 with torch.inference_mode():
@@ -148,7 +148,7 @@ for epoch in range(epoches):
     y_logits = model_1(x_train).squeeze()
     y_pred = torch.round(torch.sigmoid(y_logits))
     train_loss = loss_fn(y_logits, y_train)
-    train_acc = accuraccy_fn(y_train, y_pred)
+    train_acc = accuracy_fn(y_train, y_pred)
     optimizer.zero_grad()
     train_loss.backward()
     optimizer.step()
@@ -157,7 +157,7 @@ for epoch in range(epoches):
     test_logits = model_1(x_test).squeeze()
     test_pred = torch.round(torch.sigmoid(test_logits))
     test_loss = loss_fn(test_logits, y_test)
-    test_acc = accuraccy_fn(y_test, test_pred)
+    test_acc = accuracy_fn(y_test, test_pred)
 
     if epoch % 100 == 0:
         print(f"Epoch: {epoch} | Train Loss: {train_loss:.5f}, Train Acc.: {test_acc*100:.2f}% | Test Loss: {test_loss:.5f}, Test Acc.: {test_acc*100:.2f}%")
